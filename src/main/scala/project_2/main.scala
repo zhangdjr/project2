@@ -63,15 +63,15 @@ object main{
     }
   }
 
-  class BJKSTSketch(bucket_in: Set[(String, Int)] ,  z_in: Int, bucket_size_in: Int) extends Serializable {
+  class BJKSTSketch(bucket_in: Set[(String, Int)], z_in: Int, bucket_size_in: Int) extends Serializable {
 /* A constructor that requies intialize the bucket and the z value. The bucket size is the bucket size of the sketch. */
 
     var bucket: Set[(String, Int)] = bucket_in
-    var z: Int =
+    var z: Int = z_in
 
-    val BJKST_bucket_size = bucket_size_in;z_in
+    val BJKST_bucket_size = bucket_size_in;
 
-    def this(s: String, z_of_s: Int, bucket_size_in: Int){
+    def this(s: String, z_of_s: Int, bucket_size_in: Int) = {
       /* A constructor that allows you pass in a single string, zeroes of the string, and the bucket size to initialize the sketch */
       this(Set((s, z_of_s )) , z_of_s, bucket_size_in)
     }
@@ -105,7 +105,26 @@ object main{
 
 
   def Tug_of_War(x: RDD[String], width: Int, depth:Int) : Long = {
+    val numHashes = width * depth
+    type Hash = String => Long
+    val sketch0 = Array.fill(numHashes){((new four_universal_Radamacher_hash_function()).hash: Hash, 0L)}
 
+    val reduceOp = (sketch: Array[(Hash, Long)], j: String) => sketch.map(t => (t._1, t._2 + t._1(j)))
+    def combineOp(sketch1: Array[(Hash, Long)], sketch2: Array[(Hash, Long)]) = {
+      sketch1.zip(sketch2).map({ case (t1, t2) => (t1._1, t1._2 + t2._2)})
+    }
+    val sketches = x.aggregate(sketch0)(reduceOp, combineOp)
+    val outputs = sketches.map({ case (hash, z) => z*z})
+
+    val means = outputs.grouped(width).map(group => group.reduce(_ + _) / width).toArray
+
+    // This has bad asymptotic performance, but it doesn't matter for this part
+    if (means.length % 2 == 0) {
+      val dropped = means.sorted.drop(means.length / 2 - 1)
+      (dropped(0) + dropped(1)) / 2
+    } else {
+      means.sorted.drop(means.length / 2 - 1)(0)
+    }
   }
 
 
@@ -116,7 +135,8 @@ object main{
 
 
   def exact_F2(x: RDD[String]) : Long = {
-
+    val frequencies = x.map(a => (a, 1L)).reduceByKey((a, b) => a + b).values
+    frequencies.map(a => a*a).reduce((a,b) => a + b)
   }
 
 

@@ -1,0 +1,19 @@
+# scala-cli, metals
+.metals/
+project/metals.sbt
+**/.bloop/
+.scala-build/
+
+# sbt
+project/project/
+project/target/
+target/
+*.class
+work/
+logs/
+
+# Nix
+.direnv/
+.envrc
+
+*.csv

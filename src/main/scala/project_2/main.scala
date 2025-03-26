@@ -64,14 +64,14 @@ object main{
   }
 
   class BJKSTSketch(bucket_in: Set[(String, Int)] , z_in: Int, bucket_size_in: Int) extends Serializable {
-    /* A constructor that requies intialize the bucket and the z value. The bucket size is the bucket size of the sketch. */
+    /* A constructor that requires intialize the bucket and the z value. The bucket size is the bucket size of the sketch. */
     var bucket: Set[(String, Int)] = bucket_in
     var z: Int = z_in
     val BJKST_bucket_size = bucket_size_in
 
     def this(s: String, z_of_s: Int, bucket_size_in: Int){
-    /* A constructor that allows you pass in a single string, zeroes of the string, and the bucket size to initialize the sketch */
-    this(Set((s, z_of_s )) , z_of_s, bucket_size_in)
+      /* A constructor that allows you pass in a single string, zeroes of the string, and the bucket size to initialize the sketch */
+     this(Set((s, z_of_s )) , z_of_s, bucket_size_in)
     }
 
     def +(that: BJKSTSketch): BJKSTSketch = { /* Merging two sketches */
@@ -113,32 +113,26 @@ object main{
 
 
   def BJKST(x: RDD[String], width: Int, trials: Int) : Double = {
-    val hashfns=Seq.fill(trials)(new hash_function(width))
+    val sketches0 = Seq.fill(trials){(((new hash_function(width)), new BJKSTSketch(Set[(String, Int)](), 0, width)))}
+    val reduceOp = (sketches: Seq[(hash_function, BJKSTSketch)], j: String) => 
+      sketches.map(t => (t._1, t._2.add_string(j, t._1.zeroes(t._1.hash(j)))))
+    def combineOp(sketch1: Seq[(hash_function, BJKSTSketch)], sketch2: Seq[(hash_function, BJKSTSketch)]) =
+      sketch1.zip(sketch2).map({ case (t1, t2) => (t1._1, t1._2 + t2._2)})
+    val sketches = x.aggregate(sketches0)(reduceOp, combineOp)
 
-    def processStr(s: String): Seq[BJKSTSketch] = {
-      val sketches = hashfns.map { h =>
-      val hashOutput = h.hash(s)
-      val numZeroes = h.zeroes(hashOutput)
-      new BJKSTSketch(Set((s, numZeroes)), numZeroes, width)
-      }
-      sketches
-      }
-
-      val results=x.flatMap(processStr)
-      val mergedSketches=results.groupBy(_.z).map{ case(z,sketches) =>
-      sketches.reduce(_ + _)
-      }
-      val estimates=mergedSketches.map{sketch=>
+    val estimates = sketches.map({ case (_, sketch) =>
       scala.math.pow(2,sketch.z)*sketch.bucket.size
-      }.collect()
-      val sortedEstimates=estimates.sorted
-      sortedEstimates(sortedEstimates.length/2)
+    }).toArray()
+
+    val sortedEstimates=estimates.sorted
+    println(sortedEstimates)
+    sortedEstimates(sortedEstimates.length/2)
   }
 
 
   def Tug_of_War(x: RDD[String], width: Int, depth:Int) : Long = {
-    val numHashes = width * depth
     type Hash = String => Long
+    val numHashes = width * depth
     val sketch0 = Array.fill(numHashes){((new four_universal_Radamacher_hash_function()).hash: Hash, 0L)}
 
     val reduceOp = (sketch: Array[(Hash, Long)], j: String) => sketch.map(t => (t._1, t._2 + t._1(j)))

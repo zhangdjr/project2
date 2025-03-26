@@ -75,19 +75,28 @@ object main{
     }
 
     def +(that: BJKSTSketch): BJKSTSketch = { /* Merging two sketches */
-    val mergedBucket = (this.bucket ++ that.bucket)
-    val newZ = scala.math.max(this.z, that.z)
-    val filteredBucket = mergedBucket.filter { case (_, b) => b >= newZ }
-    new BJKSTSketch(filteredBucket, newZ, this.BJKST_bucket_size)
+      val mergedBucket = (this.bucket ++ that.bucket)
+      var newZ = scala.math.max(this.z, that.z)
+      var filteredBucket = mergedBucket.filter { case (_, b) => b >= newZ }
+      while(mergedBucket.size >= 24/0.04){
+        newZ = newZ + 1
+        filteredBucket = filteredBucket.filter { case (_, b) => b >= newZ }
+      }
+      new BJKSTSketch(filteredBucket, newZ, this.BJKST_bucket_size)
     }
 
     def add_string(s: String, z_of_s: Int): BJKSTSketch = { /* add a string to the sketch */
-    val newZ = scala.math.max(this.z, z_of_s)
-    val updatedBucket = (this.bucket + ((s, z_of_s))).filter { case (_, b) => b >= newZ }
-    new BJKSTSketch(updatedBucket, newZ, this.BJKST_bucket_size)
+      var updatedBucket = (this.bucket + ((s, z_of_s)))
+      var z = this.z
+      if(z_of_s >= this.z){
+        while(updatedBucket.size >= 24/0.04){
+          z = z + 1
+          updatedBucket = updatedBucket.filter{ case (_, b) => b >= z }
+        }
+      }
+      new BJKSTSketch(updatedBucket, z, this.BJKST_bucket_size)
     }
   }
-
 
   def tidemark(x: RDD[String], trials: Int): Double = {
     val h = Seq.fill(trials)(new hash_function(2000000000))

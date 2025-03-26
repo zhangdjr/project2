@@ -78,7 +78,7 @@ object main{
       val mergedBucket = (this.bucket ++ that.bucket)
       var newZ = scala.math.max(this.z, that.z)
       var filteredBucket = mergedBucket.filter { case (_, b) => b >= newZ }
-      while(mergedBucket.size >= this.BJKST_bucket_size){
+      while(filteredBucket.size >= this.BJKST_bucket_size){
         newZ = newZ + 1
         filteredBucket = filteredBucket.filter { case (_, b) => b >= newZ }
       }
@@ -88,7 +88,7 @@ object main{
     def add_string(s: String, z_of_s: Int): BJKSTSketch = { /* add a string to the sketch */
       var z = this.z
       var updatedBucket = this.bucket
-      if(z_of_s >= this.z) {
+      if(z_of_s >= z) {
         updatedBucket = updatedBucket + ((s, z_of_s))
         while(updatedBucket.size >= this.BJKST_bucket_size){
           z = z + 1
@@ -113,26 +113,26 @@ object main{
 
 
   def BJKST(x: RDD[String], width: Int, trials: Int) : Double = {
-  val hashfns=Seq.fill(trials)(new hash_function(width))
+    val hashfns=Seq.fill(trials)(new hash_function(width))
 
-  def processStr(s: String): Seq[BJKSTSketch] = {
-    val sketches = hashfns.map { h =>
-    val hashOutput = h.hash(s)
-    val numZeroes = h.zeroes(hashOutput)
-    new BJKSTSketch(Set((s, numZeroes)), numZeroes, width)
-    }
-    sketches
-    }
+    def processStr(s: String): Seq[BJKSTSketch] = {
+      val sketches = hashfns.map { h =>
+      val hashOutput = h.hash(s)
+      val numZeroes = h.zeroes(hashOutput)
+      new BJKSTSketch(Set((s, numZeroes)), numZeroes, width)
+      }
+      sketches
+      }
 
-    val results=x.flatMap(processStr)
-    val mergedSketches=results.groupBy(_.z).map{ case(z,sketches) =>
-    sketches.reduce(_ + _)
-    }
-    val estimates=mergedSketches.map{sketch=>
-    scala.math.pow(2,sketch.z)*sketch.bucket.size
-    }.collect()
-    val sortedEstimates=estimates.sorted
-    sortedEstimates(sortedEstimates.length/2)
+      val results=x.flatMap(processStr)
+      val mergedSketches=results.groupBy(_.z).map{ case(z,sketches) =>
+      sketches.reduce(_ + _)
+      }
+      val estimates=mergedSketches.map{sketch=>
+      scala.math.pow(2,sketch.z)*sketch.bucket.size
+      }.collect()
+      val sortedEstimates=estimates.sorted
+      sortedEstimates(sortedEstimates.length/2)
   }
 
 

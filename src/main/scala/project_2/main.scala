@@ -122,7 +122,7 @@ object main{
 
     val estimates = sketches.map({ case (_, sketch) =>
       scala.math.pow(2,sketch.z)*sketch.bucket.size
-    }).toArray()
+    })
 
     val sortedEstimates=estimates.sorted
     println(sortedEstimates)

@@ -78,7 +78,7 @@ object main{
       val mergedBucket = (this.bucket ++ that.bucket)
       var newZ = scala.math.max(this.z, that.z)
       var filteredBucket = mergedBucket.filter { case (_, b) => b >= newZ }
-      while(mergedBucket.size >= 24/0.04){
+      while(mergedBucket.size >= this.BJKST_bucket_size){
         newZ = newZ + 1
         filteredBucket = filteredBucket.filter { case (_, b) => b >= newZ }
       }
@@ -86,10 +86,11 @@ object main{
     }
 
     def add_string(s: String, z_of_s: Int): BJKSTSketch = { /* add a string to the sketch */
-      var updatedBucket = (this.bucket + ((s, z_of_s)))
       var z = this.z
-      if(z_of_s >= this.z){
-        while(updatedBucket.size >= 24/0.04){
+      var updatedBucket = this.bucket
+      if(z_of_s >= this.z) {
+        updatedBucket = updatedBucket + ((s, z_of_s))
+        while(updatedBucket.size >= this.BJKST_bucket_size){
           z = z + 1
           updatedBucket = updatedBucket.filter{ case (_, b) => b >= z }
         }

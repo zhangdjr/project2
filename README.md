@@ -33,3 +33,11 @@ Delete your project's current **README.md** file (the one you're reading right n
 
 ## Late submission penalties
 Please refer to the course policy.
+
+## Write-up
+1.
+2.
+3. After doing much trial and error, the minimum width required to consistently achieve an error within 20% is about 5500. For example, one of the local runs gave this:
+<img width="579" alt="Screenshot 2025-03-26 at 7 43 45 PM" src="https://github.com/user-attachments/assets/98d4ae09-496d-4075-9c2f-25a43823d630" />
+<img width="332" alt="Screenshot 2025-03-26 at 7 44 14 PM" src="https://github.com/user-attachments/assets/814584ae-cb69-4bf3-8e5e-d3a60f730bd9" />
+4. Compared to the F0 algorithm, the BJKST ran almost three times as fast and was more memory-efficient than F0. The only thing that wasn't as good was the accuracy. While BJKST wasn't perfect like F0, it still gave an answer that was really close.

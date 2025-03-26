@@ -63,25 +63,28 @@ object main{
     }
   }
 
-  class BJKSTSketch(bucket_in: Set[(String, Int)], z_in: Int, bucket_size_in: Int) extends Serializable {
-/* A constructor that requies intialize the bucket and the z value. The bucket size is the bucket size of the sketch. */
-
+  class BJKSTSketch(bucket_in: Set[(String, Int)] , z_in: Int, bucket_size_in: Int) extends Serializable {
+    /* A constructor that requies intialize the bucket and the z value. The bucket size is the bucket size of the sketch. */
     var bucket: Set[(String, Int)] = bucket_in
     var z: Int = z_in
+    val BJKST_bucket_size = bucket_size_in
 
-    val BJKST_bucket_size = bucket_size_in;
-
-    def this(s: String, z_of_s: Int, bucket_size_in: Int) = {
-      /* A constructor that allows you pass in a single string, zeroes of the string, and the bucket size to initialize the sketch */
-      this(Set((s, z_of_s )) , z_of_s, bucket_size_in)
+    def this(s: String, z_of_s: Int, bucket_size_in: Int){
+    /* A constructor that allows you pass in a single string, zeroes of the string, and the bucket size to initialize the sketch */
+    this(Set((s, z_of_s )) , z_of_s, bucket_size_in)
     }
 
-    def +(that: BJKSTSketch): BJKSTSketch = {    /* Merging two sketches */
-
+    def +(that: BJKSTSketch): BJKSTSketch = { /* Merging two sketches */
+    val mergedBucket = (this.bucket ++ that.bucket)
+    val newZ = scala.math.max(this.z, that.z)
+    val filteredBucket = mergedBucket.filter { case (_, b) => b >= newZ }
+    new BJKSTSketch(filteredBucket, newZ, this.BJKST_bucket_size)
     }
 
-    def add_string(s: String, z_of_s: Int): BJKSTSketch = {   /* add a string to the sketch */
-
+    def add_string(s: String, z_of_s: Int): BJKSTSketch = { /* add a string to the sketch */
+    val newZ = scala.math.max(this.z, z_of_s)
+    val updatedBucket = (this.bucket + ((s, z_of_s))).filter { case (_, b) => b >= newZ }
+    new BJKSTSketch(updatedBucket, newZ, this.BJKST_bucket_size)
     }
   }
 
@@ -100,7 +103,26 @@ object main{
 
 
   def BJKST(x: RDD[String], width: Int, trials: Int) : Double = {
+  val hashfns=Seq.fill(trials)(new hash_function(width))
 
+  def processStr(s: String): Seq[BJKSTSketch] = {
+    val sketches = hashfns.map { h =>
+    val hashOutput = h.hash(s)
+    val numZeroes = h.zeroes(hashOutput)
+    new BJKSTSketch(Set((s, numZeroes)), numZeroes, width)
+    }
+    sketches
+    }
+
+    val results=x.flatMap(processStr)
+    val mergedSketches=results.groupBy(_.z).map{ case(z,sketches) =>
+    sketches.reduce(_ + _)
+    }
+    val estimates=mergedSketches.map{sketch=>
+    scala.math.pow(2,sketch.z)*sketch.bucket.size
+    }.collect()
+    val sortedEstimates=estimates.sorted
+    sortedEstimates(sortedEstimates.length/2)
   }
 
 

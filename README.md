@@ -61,6 +61,7 @@ TODO: Add GCP Results
 
 <img width="332" alt="Screenshot 2025-03-26 at 7 44 14 PM" src="https://github.com/user-attachments/assets/814584ae-cb69-4bf3-8e5e-d3a60f730bd9" />
 
+TODO: Add GCP Results\
 4. Compared to the exact F0 algorithm, the BJKST ran almost three times as fast and was more memory-efficient than F0. The only thing that wasn't as good was the accuracy. While BJKST wasn't perfect like F0, it still gave an answer that was really close.\
 \
 Computing $F_2$ exactly produced the value `8567966130` in `26` seconds, compared to the `25` seconds the Tug of War sketch took produce an estimate of `6392961048` (both performed on the same local machine). Thus we see that the Tug of War takes approximately the same amount of time as the exact computation for this data, while being accurate to within about `25%`. However, this accuracy varied, and performing additional runs produced the table below:  

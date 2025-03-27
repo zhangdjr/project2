@@ -47,12 +47,12 @@ Group members:
        - 8 cores, 16 threads
        - 1.7 GHz base, 4.2 GHz max
      - 16 GiB RAM
+     
+  This was also run on a GCP cluster with 4 workers having 2 N1 cores each, which confirmed the result of `8567966130` in `57s`.
    
-   TODO: Add GCP Results
-
 2. A run of the Tug of War sketch with width 10 and depth 3 on the local machine (the same one as for `exactF2`) produced an estimate of `6392961048` for $F_2$ in `25` seconds.\
 \
-TODO: Add GCP Results
+This was also run on a GCP cluster with 4 workers having 2 N1 cores each, which produced an estimate of `7174856114` in `108s`
    
 
 3. After doing much trial and error, the minimum width required to consistently achieve an error within 20% is about 5500. For example, one of the local runs gave this:
@@ -61,10 +61,11 @@ TODO: Add GCP Results
 
 <img width="332" alt="Screenshot 2025-03-26 at 7 44 14 PM" src="https://github.com/user-attachments/assets/814584ae-cb69-4bf3-8e5e-d3a60f730bd9" />
 
-TODO: Add GCP Results\
-4. Compared to the exact F0 algorithm, the BJKST ran almost three times as fast and was more memory-efficient than F0. The only thing that wasn't as good was the accuracy. While BJKST wasn't perfect like F0, it still gave an answer that was really close.\
+This was also run on a GCP cluster with 4 workers having 2 N1 cores each, which produced an estimate of `8435712` in `38s`
+
+4. Compared to the exact F0 algorithm, the BJKST ran almost three times as fast and was more memory-efficient than F0. The only thing that wasn't as good was the accuracy. While BJKST wasn't perfect like F0, it still gave an answer that was quite close.\
 \
-Computing $F_2$ exactly produced the value `8567966130` in `26` seconds, compared to the `25` seconds the Tug of War sketch took produce an estimate of `6392961048` (both performed on the same local machine). Thus we see that the Tug of War takes approximately the same amount of time as the exact computation for this data, while being accurate to within about `25%`. However, this accuracy varied, and performing additional runs produced the table below:  
+Computing $F_2$ exactly produced the value `8567966130` in `26` seconds on the local machine, compared to the `25` seconds the Tug of War sketch took produce an estimate of `6392961048` (both performed on the same local machine). Thus we see that the Tug of War takes approximately the same amount of time as the exact computation for this data, while being accurate to within about `25%`. However, this accuracy varied, and performing additional runs produced the table below, which indicates that we can only assume about a `50%` error.
 
   | Estimate      | Time  |
   | ------------- | ----- |
@@ -74,3 +75,5 @@ Computing $F_2$ exactly produced the value `8567966130` in `26` seconds, compare
   | `4252007852`  | `24s` |
   | `6096010550`  | `25s` |
   | `10293972648` | `25s` |
+  
+  Thus on this dataset, the exact F2 computation is preferably since it takes the same amount of time (or significantly less on the GCP cluster), and the Tug of War is significantly less accurate.

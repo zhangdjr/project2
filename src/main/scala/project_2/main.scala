@@ -125,8 +125,7 @@ object main{
     })
 
     val sortedEstimates=estimates.sorted
-    println(sortedEstimates)
-    sortedEstimates(sortedEstimates.length/2)
+    sortedEstimates(sortedEstimates.length / 2)
   }
 
 

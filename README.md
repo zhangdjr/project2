@@ -34,11 +34,39 @@ Delete your project's current **README.md** file (the one you're reading right n
 ## Late submission penalties
 Please refer to the course policy.
 
-## Write-up
+# Write-up
+
+Group members:
+
+- Caden Parajuli
+- Tian-hao Zhang
+
 1.
-2.
+2. A run of the Tug of War sketch with width 10 and depth 3 on a local machine produced an estimate of `6392961048` for $F_2$ in `25` seconds. The specifications of this local machine are:
+   - Lenovo Thinkpad X13
+     - AMD Ryzen 7 PRO 4750U
+       - 8 cores, 16 threads
+       - 1.7 GHz base, 4.2 GHz max
+     - 16 GiB RAM
+   
+   TODO: Add GCP Results
+   
+
 3. After doing much trial and error, the minimum width required to consistently achieve an error within 20% is about 5500. For example, one of the local runs gave this:
+
 <img width="579" alt="Screenshot 2025-03-26 at 7 43 45 PM" src="https://github.com/user-attachments/assets/98d4ae09-496d-4075-9c2f-25a43823d630" />
 
 <img width="332" alt="Screenshot 2025-03-26 at 7 44 14 PM" src="https://github.com/user-attachments/assets/814584ae-cb69-4bf3-8e5e-d3a60f730bd9" />
-4. Compared to the F0 algorithm, the BJKST ran almost three times as fast and was more memory-efficient than F0. The only thing that wasn't as good was the accuracy. While BJKST wasn't perfect like F0, it still gave an answer that was really close.
+
+4. Compared to the exact F0 algorithm, the BJKST ran almost three times as fast and was more memory-efficient than F0. The only thing that wasn't as good was the accuracy. While BJKST wasn't perfect like F0, it still gave an answer that was really close.\
+\
+Computing $F_2$ exactly produced the value `8567966130` in `26` seconds, compared to the `25` seconds the Tug of War sketch took produce an estimate of `6392961048` (both performed on the same local machine). Thus we see that the Tug of War takes approximately the same amount of time as the exact computation for this data, while being accurate to within about `25%`. However, this accuracy varied, and performing additional runs produced the table below:  
+
+  | Estimate      | Time  |
+  | ------------- | ----- |
+  | `6392961048`  | `25s` |
+  | `4228856047`  | `25s` |
+  | `7943122858`  | `26s` |
+  | `4252007852`  | `24s` |
+  | `6096010550`  | `25s` |
+  | `10293972648` | `25s` |

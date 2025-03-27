@@ -41,8 +41,7 @@ Group members:
 - Caden Parajuli
 - Tian-hao Zhang
 
-1.
-2. A run of the Tug of War sketch with width 10 and depth 3 on a local machine produced an estimate of `6392961048` for $F_2$ in `25` seconds. The specifications of this local machine are:
+1. Computing $F_2$ exactly on a local machine produced the value `8567966130` in `26` seconds. The specifications of this local machine are:
    - Lenovo Thinkpad X13
      - AMD Ryzen 7 PRO 4750U
        - 8 cores, 16 threads
@@ -50,6 +49,10 @@ Group members:
      - 16 GiB RAM
    
    TODO: Add GCP Results
+
+2. A run of the Tug of War sketch with width 10 and depth 3 on the local machine (the same one as for `exactF2`) produced an estimate of `6392961048` for $F_2$ in `25` seconds.\
+\
+TODO: Add GCP Results
    
 
 3. After doing much trial and error, the minimum width required to consistently achieve an error within 20% is about 5500. For example, one of the local runs gave this:
